@@ -6,7 +6,8 @@ import ubinascii, machine
 import motor
 from machine import Pin
 
-topic = b'/robot/' + ubinascii.hexlify(machine.unique_id())
+robot_id = ubinascii.hexlify(machine.unique_id())
+topic = b'/robot/' + robot_id
 
 def start_wifi():
     global topic
@@ -20,55 +21,76 @@ def start_wifi():
         assert timeout, "WiFi failed"
     print("WiFi connected", sta_if.ifconfig())
 
-# Publish test messages e.g. with:
-# mosquitto_pub -t foo_topic -m hello
-
 time_to_stop = 0
-TIMEOUT = 100*1000 # stop after this ms
+TIMEOUT = 1000 # stop after this ms
 
 # Received messages from subscriptions will be delivered to this callback
-def sub_cb(a_topic, msg):
+def msg_callback(a_topic, msg):
     global time_to_stop
 
+    print(repr(topic), repr(msg))
     tail = a_topic[len(topic)+1:]
-    if tail == b'a/speed':
-        motor.motor_a.set_speed(int(msg))
-    elif tail == b'b/speed':
-        motor.motor_b.set_speed(int(msg))
-    elif tail == b'a/dir':
-        motor.motor_a.set_dir(int(msg))
-    elif tail == b'b/dir':
-        motor.motor_b.set_dir(int(msg))
+    print(repr(tail), repr(msg))
+    if tail == b'motors':
+        parts = msg.split(b',')
+
+        a,b = int(parts[0]),int(parts[1])
+        if a > 0:
+            motor.motor_a.forward(a)
+        else:
+            motor.motor_a.backward(a)
+        if b > 0:
+            motor.motor_b.forward(b)
+        else:
+            motor.motor_b.backward(b)
     else:
         print("got", tail)
-    time_to_stop = ticks_add(ticks_ms, TIMEOUT)
+    time_to_stop = ticks_ms() + TIMEOUT
+
+def intro():
+    motor.motor_a.stop()
+    motor.motor_b.stop()
+
+    motor.motor_a.forward(100)
+    motor.motor_b.backward(100)
+    time.sleep(0.5)
+    motor.motor_a.backward(100)
+    motor.motor_b.forward(100)
+    time.sleep(0.5)
 
 def mqtt_drive(server="localhost"):
     global time_to_stop
 
-    motor.motor_a.forward(100)
-    motor.motor_b.forward(100)
-    time.sleep(0.5)
+    intro()
+
     motor.motor_a.stop()
     motor.motor_b.stop()
 
     print("I'm %s" % topic)
 
-    c = MQTTClient("umqtt_client", server)
-    c.set_callback(sub_cb)
+    time_to_announce = ticks_ms() + 15 * 1000
+
+    c = MQTTClient(b"umqtt_client/%s" % robot_id, server)
+    c.set_callback(msg_callback)
     c.set_last_will(topic + "/$online$", "0", retain=1)
     c.connect()
+    c.publish(topic+"/$online$", '1')
     c.subscribe(topic+'/#')
     while True:
             c.check_msg()
-            if ticks_diff(ticks_ms(), time_to_stop) < 0:
+            if ticks_ms() > time_to_stop:
                 motor.motor_a.stop()
                 motor.motor_b.stop()
                 c.ping()
-                time_to_stop = ticks_add(ticks_ms, 10*TIMEOUT)
+                time_to_stop = ticks_ms() + 10*TIMEOUT
+
+            if ticks_ms() > time_to_announce:
+                c.publish(topic + "/$online$", '1')
+                time_to_announce = ticks_ms() + 12 * 1000
+
             # Then need to sleep to avoid 100% CPU usage (in a real
             # app other useful actions would be performed instead)
-            time.sleep(0.001)
+            time.sleep(0.005)
 
     c.disconnect()
 
