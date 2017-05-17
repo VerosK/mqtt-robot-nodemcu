@@ -11,3 +11,5 @@
      wifi.connect('robot', '12345678')
 
  * Reboot the board
+
+Web part is available at https://github.com/VerosK/mqtt-robot-webdriver/
