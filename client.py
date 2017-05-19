@@ -12,7 +12,7 @@ topic = b'/robot/' + robot_id
 def start_wifi():
     global topic
     sta_if = network.WLAN(network.STA_IF); sta_if.active(True)
-    timeout = 12
+    timeout = 15
     print("Waiting for WiFi connection")
     while not sta_if.isconnected():
         print("... %ss" % timeout) 
@@ -58,7 +58,8 @@ def intro():
     motor.motor_b.forward(100)
     time.sleep(0.5)
 
-def mqtt_drive(server="localhost"):
+
+def mqtt_drive(server="localhost", robot_name='robot'):
     global time_to_stop
 
     intro()
@@ -75,6 +76,7 @@ def mqtt_drive(server="localhost"):
     c.set_last_will(topic + "/$online$", "0", retain=1)
     c.connect()
     c.publish(topic+"/$online$", '1')
+    c.publish(topic + "/$name$", robot_name, retain=1)
     c.subscribe(topic+'/#')
     while True:
             c.check_msg()
