@@ -7,13 +7,14 @@
  * Change `config.py` to the right MQTT server.
 
  * Connect to WiFi  
-
-       import network
-       wifi = network.WLAN()
-       wifi.active(True)       
-       # wifi.scan()           # scan WiFi networks when needed
-       wifi.connect('robot', '12345678')
-       # wifi.isconnected()    # check WiFi connection       
+   ```python
+   import network
+   wifi = network.WLAN()
+   wifi.active(True)       
+   # wifi.scan()           # scan WiFi networks when needed
+   wifi.connect('robot', '12345678')
+   # wifi.isconnected()    # check WiFi connection       
+   ```
        
 
  * Reboot the board
