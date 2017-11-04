@@ -73,7 +73,7 @@ def mqtt_drive(server="localhost", robot_name='robot'):
 
     c = MQTTClient(b"umqtt_client/%s" % robot_id, server)
     c.set_callback(msg_callback)
-    c.set_last_will(topic + "/$online$", "0", retain=1)
+    #    c.set_last_will(topic + "/$online$", "0", retain=1)
     c.connect()
     c.publish(topic+"/$online$", '1')
     c.publish(topic + "/$name$", robot_name, retain=1)
@@ -88,7 +88,7 @@ def mqtt_drive(server="localhost", robot_name='robot'):
 
             if ticks_ms() > time_to_announce:
                 c.publish(topic + "/$online$", '1')
-                time_to_announce = ticks_ms() + 12 * 1000
+                time_to_announce = ticks_ms() + 16 * 1000
 
             # Then need to sleep to avoid 100% CPU usage (in a real
             # app other useful actions would be performed instead)
