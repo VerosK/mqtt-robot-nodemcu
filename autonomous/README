@@ -1,0 +1,4 @@
+A script that makes the robot autonomous.
+
+To use it, connect bumper switches to D5 and D6,
+and flash this script.

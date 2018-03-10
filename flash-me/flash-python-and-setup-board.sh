@@ -31,3 +31,14 @@ python setup-network.py $PORT
            echo OK;
    done
 )
+
+while [ x"$1" != x ]; do
+    pushd $1
+    for i in *.py; do
+        echo -e "Uploading $i "
+        ampy -p /dev/ttyUSB1 put $i
+        echo OK
+    done
+    popd
+    shift
+fi
