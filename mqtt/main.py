@@ -1,4 +1,6 @@
+import wifi_connect
 import client
+
 try:
     from config import mqtt_host
 except ImportError:
@@ -8,5 +10,5 @@ try:
 except ImportError:
     robot_name = 'another robot'
 
-client.start_wifi()
+wifi_connect.connect()
 client.mqtt_drive(mqtt_host, robot_name=robot_name)
