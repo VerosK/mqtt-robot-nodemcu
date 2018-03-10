@@ -35,14 +35,8 @@ def msg_callback(a_topic, msg):
         parts = msg.split(b',')
 
         a,b = int(parts[0]),int(parts[1])
-        if a > 0:
-            motor.motor_a.forward(a)
-        else:
-            motor.motor_a.backward(a)
-        if b > 0:
-            motor.motor_b.forward(b)
-        else:
-            motor.motor_b.backward(b)
+        motor.motor_a.go(a)
+        motor.motor_b.go(b)
     else:
         print("got", tail)
     time_to_stop = ticks_ms() + TIMEOUT
@@ -51,11 +45,11 @@ def intro():
     motor.motor_a.stop()
     motor.motor_b.stop()
 
-    motor.motor_a.forward(100)
-    motor.motor_b.backward(100)
+    motor.motor_a.go(100)
+    motor.motor_b.go(-100)
     time.sleep(0.5)
-    motor.motor_a.backward(100)
-    motor.motor_b.forward(100)
+    motor.motor_a.go(-100)
+    motor.motor_b.go(100)
     time.sleep(0.5)
 
 
