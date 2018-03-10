@@ -5,21 +5,10 @@ from umqtt.simple import MQTTClient
 import ubinascii, machine
 import motor
 from machine import Pin
+import wifi_connect
 
 robot_id = ubinascii.hexlify(machine.unique_id())
 topic = b'/robot/' + robot_id
-
-def start_wifi():
-    global topic
-    sta_if = network.WLAN(network.STA_IF); sta_if.active(True)
-    timeout = 15
-    print("Waiting for WiFi connection")
-    while not sta_if.isconnected():
-        print("... %ss" % timeout) 
-        time.sleep(1)
-        timeout = timeout - 1
-        assert timeout, "WiFi failed"
-    print("WiFi connected", sta_if.ifconfig())
 
 time_to_stop = 0
 TIMEOUT = 1000 # stop after this ms
@@ -91,5 +80,5 @@ def mqtt_drive(server="localhost", robot_name='robot'):
     c.disconnect()
 
 if __name__ == "__main__":
-    start_wifi()
+    wifi_connect.connect()
     mqtt_drive(server="mqtt.toaster.cz")

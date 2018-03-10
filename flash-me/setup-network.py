@@ -10,12 +10,12 @@ except IndexError:
 try:
     NETWORK = sys.argv[2]
 except IndexError:
-    NETWORK = "robot"
+    NETWORK = "PyConSK"
 
 try:
     PASSWORD = sys.argv[3]
 except IndexError:
-    PASSWORD = "12345678"
+    PASSWORD = "FIITpyconsk2018"
 
 
 child = pexpect.spawn("picocom -b 115200 {}".format(PORT), 

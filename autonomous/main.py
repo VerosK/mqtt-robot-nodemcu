@@ -2,6 +2,9 @@ import machine
 from time import sleep
 
 from motor import motors
+import wifi_connect
+
+wifi_connect.turn_off()
 
 motor_l, motor_r = motors
 

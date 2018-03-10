@@ -79,17 +79,24 @@ def flash_me(port, firmware_file, firmware_url, flash, flash_mode,
         click.secho('== Reset board now; press enter ==', fg='yellow')
         click.pause()
 
+    def upload(filepath):
+        click.secho('Uploading ' + str(filepath))
+        run(['ampy',
+                '--port', port,
+                'put', str(filepath), str(filepath.name)])
+
     directories = list(code_dir)
     if common_files:
         directories.insert(0, BASE_PATH / 'common')
 
+    config_path = BASE_PATH / 'config.py'
+    if config_path:
+        upload(config_path)
+
     for directory in directories:
         path = BASE_PATH / directory
         for filepath in path.glob('*.py'):
-            click.secho('Uploading ' + str(filepath))
-            run(['ampy',
-                 '--port', port,
-                 'put', str(filepath), str(filepath.name)])
+            upload(filepath)
 
 
 if __name__ == '__main__':
