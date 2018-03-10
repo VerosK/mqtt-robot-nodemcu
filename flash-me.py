@@ -14,7 +14,7 @@ SPEED = 115200
 DEFAULT_FILENAME = 'esp8266-20171101-v1.9.3.bin'
 DEFAULT_URL = 'http://micropython.org/resources/firmware/' + DEFAULT_FILENAME
 
-DATA_PATH = Path(__file__).parent.parent
+BASE_PATH = Path(__file__).parent.parent
 
 
 def shell_escape(string):
@@ -39,19 +39,22 @@ def run(args, **kwargs):
               help='File with firmware (downloaded if missing)')
 @click.option('-U', '--firmware-url', default=DEFAULT_URL,
               help='URL from which firmware is downloaded if missing')
-@click.option('-x/-X', '--flash/--no-flash', default=True,
-              help='Flash firmware. (Use -X if only updating files)')
 @click.option('--flash-mode', 'flash_mode', default='dio',
               help='Flash mode (see esptool --help)')
+@click.option('-x/-X', '--flash/--no-flash', default=True,
+              help='Flash firmware. (Use -X if only updating files)')
 @click.option('-c/-C', '--common-files/--no-common-files', default=True,
               help='Upload common files.')
-@click.argument('extra_dir', nargs=-1)
+@click.argument('code_dir', nargs=-1, required=True)
 def flash_me(port, firmware_file, firmware_url, flash, flash_mode,
-             common_files, extra_dir):
+             common_files, code_dir):
     """Flash firmware and scripts to a NodeMCU board
 
-    Set EXTRA_DIR to upload alternative files, for example "autonomous"
-    to make an autonomous robot (with bumper switches).
+    Pass CODE_DIR to get the behavior you want:
+
+        - 'mqtt': Robot controlled over a MQTT server
+
+        - 'autonomous': autonomous robot (with bumper switches)
     """
     pprint.pprint(vars())
     firmware_path = Path(firmware_file)
@@ -76,12 +79,12 @@ def flash_me(port, firmware_file, firmware_url, flash, flash_mode,
         click.secho('== Reset board now; press enter ==', fg='yellow')
         click.pause()
 
-    directories = list(extra_dir)
+    directories = list(code_dir)
     if common_files:
-        directories.insert(0, DATA_PATH)
+        directories.insert(0, BASE_PATH / 'common')
 
     for directory in directories:
-        path = Path(directory)
+        path = BASE_PATH / directory
         for filepath in path.glob('*.py'):
             click.secho('Uploading ' + str(filepath))
             run(['ampy',
