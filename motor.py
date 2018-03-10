@@ -1,12 +1,15 @@
 import machine
 import time
 
-class _Motor:
-
-    def __init__(self, dir_pin, speed_pin):
+class Motor:
+    def __init__(self, dir_pin, speed_pin, reversed=True):
         self.dir_pin = machine.Pin(dir_pin, machine.Pin.OUT)
         self.speed_pwm = machine.PWM(
             machine.Pin(speed_pin, machine.Pin.OUT), freq=500)
+        if reversed:
+            self._speed_factor = -11
+        else:
+            self._speed_factor = 11
 
     def stop(self):
         self.speed_pwm.duty(0)
@@ -26,7 +29,7 @@ class _Motor:
         return self.speed
 
     def _set_pwm(self, speed):
-        self.speed_pwm.duty(min(11*speed,1024))
+        self.speed_pwm.duty(min(self._speed_factor*speed,1024))
 
     def test(self):
         "Run motor test"
@@ -42,6 +45,6 @@ class _Motor:
         self.stop()
 
 
-motor_a = _Motor(dir_pin=0, speed_pin=5)
-motor_b = _Motor(dir_pin=2, speed_pin=4)
+motor_a = Motor(dir_pin=0, speed_pin=5)
+motor_b = Motor(dir_pin=2, speed_pin=4)
 motors = motor_a, motor_b
