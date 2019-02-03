@@ -13,6 +13,13 @@ In a Python 3 virtual env, do:
 $ python -m pip install esptool adafruit-ampy requests click
 ```
 
+On Ubuntu install:
+
+```bash
+sudo apt-get install python3-pip python3-requests python3-click
+pip3 install esptool adafruit-ampy ampy
+```
+
 Then, run `python flash-me.py mqtt` to flash the robot.
 
 This uploads both firmware and Python modules.
@@ -38,6 +45,10 @@ you can pass `-X` to only update the Python modules.
 ## HOW TO: connect to terminal
 
  * Open terminal (Putty, Picocom, Minicom or whatever). speed: 115200
+
+```bash
+minicom -D /dev/ttyUSB0
+```
 
  * Press `Ctrl+C` to stop running Python code. Prompt `>>>` should appear.
 
