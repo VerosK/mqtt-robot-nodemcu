@@ -2,4 +2,7 @@ wifi_essid = 'robot'
 wifi_password = 'secret123secret'
 
 mqtt_host = 'broker.hivemq.com'
+#mqtt_user = 'guest'
+#mqtt_password = 'guest'
+
 robot_name = 'Test robot'

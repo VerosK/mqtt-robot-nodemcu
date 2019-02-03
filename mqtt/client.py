@@ -42,7 +42,7 @@ def intro():
     time.sleep(0.5)
 
 
-def mqtt_drive(server="localhost", robot_name='robot'):
+def mqtt_drive(server="localhost", robot_name='another robot', mqtt_user='guest', mqtt_password='guest'):
     global time_to_stop
 
     intro()
@@ -54,7 +54,7 @@ def mqtt_drive(server="localhost", robot_name='robot'):
 
     time_to_announce = ticks_ms() + 15 * 1000
 
-    c = MQTTClient(b"umqtt_client/%s" % robot_id, server)
+    c = MQTTClient(b"umqtt_client/%s" % robot_id, server, 1883, mqtt_user, mqtt_password)
     c.set_callback(msg_callback)
     #    c.set_last_will(topic + "/$online$", "0", retain=1)
     c.connect()
